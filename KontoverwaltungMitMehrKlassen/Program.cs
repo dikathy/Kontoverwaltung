@@ -10,11 +10,15 @@ namespace KontoverwaltungMitMehrKlassen
     {
         static void Main(string[] args)
         {
+            bool end = false;
             List<Konto> bestehendeKonten = new List<Konto>();
             List<Inhaber> bestehendeKunden = new List<Inhaber>();
             List<int> kontonummern = new List<int>();
+            kontonummern.Add(0);
             List<int> kreditnummern = new List<int>();
+            kreditnummern.Add(0);
             List<int> kundennummern = new List<int>();
+            kundennummern.Add(0);
 
             Console.WriteLine("Willkommen! Bitte wählen Sie eine Funktion aus:");
             Console.WriteLine("[A] Anlegen");
@@ -23,128 +27,206 @@ namespace KontoverwaltungMitMehrKlassen
             Console.WriteLine("[X] Beenden");
 
             var enteredKey = Console.ReadKey();
-
-            if (enteredKey.Key == ConsoleKey.A)
+            while (true)
             {
-                //Bankkonto oder Kredit
-                Console.WriteLine("Was möchten Sie anlegen?");
-                Console.WriteLine("[B] Bankkonto");
-                Console.WriteLine("[K] Kredit");
-                Console.WriteLine("[X] Zurück");
-                enteredKey = Console.ReadKey();
-
-                if (enteredKey.Key == ConsoleKey.B)
+                if (enteredKey.Key == ConsoleKey.A)
                 {
-                    Console.WriteLine("Für wen soll ein neues Bankkonto angelegt werden?");
-                    Console.WriteLine("[B] Bestandskunde");
-                    Console.WriteLine("[N] Neukunde");
+                    //Bankkonto oder Kredit
+                    Console.WriteLine("\nWas möchten Sie anlegen?");
+                    Console.WriteLine("[B] Bankkonto");
+                    Console.WriteLine("[K] Kredit");
                     Console.WriteLine("[X] Zurück");
                     enteredKey = Console.ReadKey();
 
                     if (enteredKey.Key == ConsoleKey.B)
                     {
-                        Console.WriteLine("Bitte die Kundennummer angeben:");
-                        int kundennummer;
-                        var validKundennummer = int.TryParse(Console.ReadLine(), out kundennummer);
-                        while (!validKundennummer)
+                        Console.WriteLine("\nFür wen soll ein neues Bankkonto angelegt werden?");
+                        Console.WriteLine("[B] Bestandskunde");
+                        Console.WriteLine("[N] Neukunde");
+                        Console.WriteLine("[X] Zurück");
+                        enteredKey = Console.ReadKey();
+
+                        if (enteredKey.Key == ConsoleKey.B)
                         {
-                            Console.WriteLine("Das ist keine gültige Kundennummer. Bitte erneut versuchen.");
+                            Console.WriteLine("\nBitte die Kundennummer angeben:" + "\n(Mit 'Cancel' kann die Aktion abgebrochen werden)");
+                            int kundennummer;
                             var input = Console.ReadLine();
-                            if (input.ToString() != "Cancel")
+                            if (input.ToString() == "Cancel")
                             {
                                 break;
                             }
-                            validKundennummer = int.TryParse(input, out kundennummer);
-                            validKundennummer = kundennummern.Contains(kundennummer);
-                        }
-                        foreach (Inhaber inhaber in bestehendeKunden)
-                        {
-                            if (inhaber.Kundennummer == kundennummer)
+                            var validKundennummer = int.TryParse(input, out kundennummer);
+                            if (validKundennummer)
                             {
-                                Console.WriteLine("Neues Konto für folgenden Kunden anlegen: " + inhaber.Vorname + inhaber.Nachname + "?");
-                                Console.WriteLine("[J] Ja");
-                                Console.WriteLine("[N] Nein");
-                                var answer = Console.ReadKey();
-                                if (answer.Key == ConsoleKey.J)
+                                validKundennummer = kundennummern.Contains(kundennummer);
+                            }
+                            while (!validKundennummer)
+                            {
+                                Console.WriteLine("\nDas ist keine gültige Kundennummer. Bitte erneut versuchen.");
+                                input = Console.ReadLine();
+                                if (input.ToString() == "Cancel")
                                 {
-                                    var kontonummer = kontonummern.Max() + 1;
-                                    kontonummern.Add(kontonummer);
-                                    bestehendeKonten.Add(new Konto(inhaber, kontonummer));
-                                    Console.WriteLine("Neues Konto mit der Kontonummer " + kontonummer + "angelegt.");
+                                    break;
                                 }
-                                else if (answer.Key == ConsoleKey.N)
+                                validKundennummer = int.TryParse(input, out kundennummer);
+                                validKundennummer = kundennummern.Contains(kundennummer);
+                            }
+                            foreach (Inhaber inhaber in bestehendeKunden)
+                            {
+                                if (inhaber.Kundennummer == kundennummer)
                                 {
-                                    return;
+                                    Console.WriteLine("\nNeues Konto für folgenden Kunden anlegen: " + inhaber.Vorname + " " + inhaber.Nachname + "?");
+                                    Console.WriteLine("[J] Ja");
+                                    Console.WriteLine("[N] Nein");
+                                    var answer = Console.ReadKey();
+                                    if (answer.Key == ConsoleKey.J)
+                                    {
+                                        var kontonummer = kontonummern.Max() + 1;
+                                        kontonummern.Add(kontonummer);
+                                        bestehendeKonten.Add(new Konto(inhaber, kontonummer));
+                                        Console.WriteLine("\nNeues Konto mit der Kontonummer " + kontonummer + " angelegt.");
+                                    }
+                                    else if (answer.Key == ConsoleKey.N)
+                                    {
+                                        Console.WriteLine("\nAktion abgebrochen.");
+                                    }
                                 }
                             }
                         }
-                    }
-                    else if(enteredKey.Key == ConsoleKey.N)
-                    {
-                        Inhaber inhaber = new Inhaber();
-                        int alter;
+                        else if (enteredKey.Key == ConsoleKey.N)
+                        {
+                            Inhaber inhaber = new Inhaber();
+                            int alter;
 
-                        Console.WriteLine("Bankkonto für Neukunden einrichten.");
-                        Console.WriteLine("Nachname?");
-                        inhaber.Nachname = Console.ReadLine();
-                        Console.WriteLine("Vorname?");
-                        inhaber.Vorname = Console.ReadLine();
-                        Console.WriteLine("Alter?");
-                        var validAlter = int.TryParse(Console.ReadLine(), out alter);
-                        if (alter > 120)
-                        {
-                            validAlter = false;
-                        }
-                        while (!validAlter)
-                        {
-                            Console.WriteLine("Kein gültiges Alter eingegeben");
-                            validAlter = int.TryParse(Console.ReadLine(), out alter);
-                            if (alter > 125)
+                            Console.WriteLine("\nBankkonto für Neukunden einrichten.");
+                            Console.WriteLine("Nachname?");
+                            inhaber.Nachname = Console.ReadLine();
+                            Console.WriteLine("Vorname?");
+                            inhaber.Vorname = Console.ReadLine();
+                            Console.WriteLine("Alter?");
+                            var validAlter = int.TryParse(Console.ReadLine(), out alter);
+                            if (alter > 120)
                             {
                                 validAlter = false;
                             }
+                            while (!validAlter)
+                            {
+                                Console.WriteLine("\nKein gültiges Alter eingegeben");
+                                validAlter = int.TryParse(Console.ReadLine(), out alter);
+                                if (alter > 125)
+                                {
+                                    validAlter = false;
+                                }
+                            }
+                            inhaber.Alter = alter;
+                            inhaber.Kundennummer = kundennummern.Max() + 1;
+                            kundennummern.Add(inhaber.Kundennummer);
+                            bestehendeKunden.Add(inhaber);
+                            Konto konto = new Konto(inhaber, kontonummern.Max() + 1);
+                            kontonummern.Add(konto.Kontonummer);
+                            bestehendeKonten.Add(konto);
+                            Console.WriteLine("\nNeuer Kunde und neues Konto wurden erfolgreich angelegt.");
+                            Console.WriteLine("Kundennummer: " + inhaber.Kundennummer);
+                            Console.WriteLine("Kontonummer: " + konto.Kontonummer);
+                            Console.ReadKey();
                         }
-                        inhaber.Alter = alter;                        
-                        inhaber.Kundennummer = kundennummern.Max() + 1;
-                        kundennummern.Add(inhaber.Kundennummer);
-                        bestehendeKunden.Add(inhaber);                        
-                        Konto konto = new Konto(inhaber, kontonummern.Max() + 1);
-                        kontonummern.Add(konto.Kontonummer);
-                        bestehendeKonten.Add(konto);
-                        Console.WriteLine("Neuer Kunde und neues Konto wurden erfolgreich angelegt.");
-                        Console.WriteLine("Kundennummer: " + inhaber.Kundennummer);
-                        Console.WriteLine("Kontonummer: " + konto.Kontonummer);
-                        Console.ReadKey();
+                        else if (enteredKey.Key == ConsoleKey.X)
+                        {
+                            break;
+                        }
                     }
-                }
-            }
-            else if (enteredKey.Key == ConsoleKey.B)
-            {
-                //Abbuchung oder Gutschrift
-            }
-            else if (enteredKey.Key == ConsoleKey.D)
-            {
-                Console.WriteLine("Datenanzeige");
-                Console.WriteLine("Bitte die Nummer des Kontos angeben:", "Mit 'Cancel' kehren Sie in das Hauptmenü zurück");
-                int kontonummer;
-                var validKontonummer = int.TryParse(Console.ReadLine(), out kontonummer);
-                while (!validKontonummer)
-                {
-                    Console.WriteLine("Eine Kontonummer besteht nur aus Zahlen. Bitte erneut versuchen.");
-                    validKontonummer = int.TryParse(Console.ReadLine(), out kontonummer);
-                }
-                foreach (Konto konto in bestehendeKonten)
-                {
-                    if (konto.Kontonummer == kontonummer)
+                    else if (enteredKey.Key == ConsoleKey.K)
                     {
-                        konto.DatenAnzeigen();
+                        //Kredit
+                        int kontonummer;
+                        Console.WriteLine("Neuen Kredit anlegen.");
+                        Console.WriteLine("Für welches Konto soll ein Kredit gewährt werden?" + "\n(Mit 'Cancel' kann die Aktion abgebrochen werden");
+                        var input = Console.ReadLine();
+                        if (input.ToString() == "Cancel")
+                        {
+                            break;
+                        }
+                        var validKontonummer = int.TryParse(input, out kontonummer);
+                        if (validKontonummer)
+                        {
+                            validKontonummer = kontonummern.Contains(kontonummer);
+                        }
+                        while (!validKontonummer)
+                        {
+                            Console.WriteLine("\nDas ist keine gültige Kontonummer. Bitte erneut versuchen.");
+                            input = Console.ReadLine();
+                            validKontonummer = int.TryParse(input, out kontonummer);
+                            if (validKontonummer)
+                            {
+                                validKontonummer = kontonummern.Contains(kontonummer);
+                            }
+                        }
+                        foreach (Konto konto in bestehendeKonten)
+                        {
+                            if (konto.Kontonummer == kontonummer)
+                            {
+                                if (konto.Inhaber.Alter < 18)
+                                {
+                                    Console.WriteLine("\nDer Kontoinhaber ist minderjährig und darf deshalb keinen Kredit bekommen.");
+                                    Console.WriteLine("Drücken Sie eine beliebige Taste, um in das Hauptmenü zurückzukehren.");
+                                    Console.ReadKey();
+                                    break;
+                                }
+                                Console.WriteLine("Kreditrahmen:");
+                                double kreditrahmen;
+                                var validKreditrahmen = double.TryParse(Console.ReadLine(), out kreditrahmen);
+                                while (!validKreditrahmen)
+                                {
+                                    Console.WriteLine("\nDas ist kein gültiger Kreditrahmen! Bitte erneut versuchen.");
+                                    validKreditrahmen = double.TryParse(Console.ReadLine(), out kreditrahmen);
+                                }
+                                Kredit kredit = new Kredit(kreditnummern.Max() + 1, konto, kreditrahmen);
+                                kreditnummern.Add(kredit.Kreditnummer);
+                                konto.Kredite = kredit;
+                                Console.WriteLine("Das Konto " + konto.Kontonummer + " verfügt nun über einen zusätzlichen Kreditrahmen von " + kredit.Kreditrahmen + " Euro.");
+                                Console.ReadKey();
+                            }
+                        }
                     }
                 }
-            }
-            else if(enteredKey.Key == ConsoleKey.X)
-            {
-                return;
-            }
+                else if (enteredKey.Key == ConsoleKey.B)
+                {
+                    //Abbuchung oder Gutschrift
+                }
+                else if (enteredKey.Key == ConsoleKey.D)
+                {
+                    Console.WriteLine("\nDatenanzeige");
+                    Console.WriteLine("Bitte die Nummer des Kontos angeben:" + "\nMit 'Cancel' kehren Sie in das Hauptmenü zurück");
+                    int kontonummer;
+                    string input = Console.ReadLine();
+                    if (input != "Cancel")
+                    {
+                        var validKontonummer = int.TryParse(input, out kontonummer);
+                        while (!validKontonummer)
+                        {
+                            Console.WriteLine("Eine Kontonummer besteht nur aus Zahlen. Bitte erneut versuchen.");
+                            validKontonummer = int.TryParse(Console.ReadLine(), out kontonummer);
+                        }
+                        foreach (Konto konto in bestehendeKonten)
+                        {
+                            if (konto.Kontonummer == kontonummer)
+                            {
+                                konto.DatenAnzeigen();
+                            }
+                        }
+                    }                    
+                }
+                else if (enteredKey.Key == ConsoleKey.X)
+                {
+                    return;
+                }
+                Console.WriteLine("Bitte wählen Sie eine Funktion aus:");
+                Console.WriteLine("[A] Anlegen");
+                Console.WriteLine("[B] Buchen");
+                Console.WriteLine("[D] Daten anzeigen");
+                Console.WriteLine("[X] Beenden");
+                enteredKey = Console.ReadKey();
+            }            
         }       
     }
 
@@ -226,37 +308,50 @@ namespace KontoverwaltungMitMehrKlassen
             _Inhaber = inhaber;
         }
 
-        private List<Kredit> _Kredite;
+        private List<Kredit> _Kredite = new List<Kredit>();
 
         public Kredit Kredite
         {
-            set { _Kredite.Add(value) ; }
+            set { _Kredite.Add(value); }
         }
 
 
         public void DatenAnzeigen()
         {
             double kreditsumme = 0;
+            double kreditrahmen = 0;
             Console.WriteLine("Kontodaten:");
-            Console.WriteLine("Inhaber: " + _Inhaber.Vorname + _Inhaber.Nachname);
-            Console.WriteLine("Kontostand: " + _Kontostand);
-            foreach (Kredit kredit in _Kredite)
+            Console.WriteLine("Inhaber: " + _Inhaber.Vorname + " " + _Inhaber.Nachname);
+            Console.WriteLine("Kontostand: " + _Kontostand + " Euro");
+            if (_Kredite != null)
             {
-                kreditsumme += kredit.Kreditsumme;
+                foreach (Kredit kredit in _Kredite)
+                {
+                    kreditsumme += kredit.Kreditsumme;
+                    kreditrahmen += kredit.Kreditrahmen;
+                }                
             }
             var realgeld = _Kontostand - kreditsumme;
-            Console.WriteLine("Realgeld: " + realgeld);
+            Console.WriteLine("Realgeld: " + realgeld + " Euro");
+            Console.WriteLine("Kreditrahmen insgesamt: " + kreditrahmen + " Euro");
+
         }
     }
 
     class Kredit
     {
+        public Kredit(int kreditnummer,Konto konto, double kreditrahmen)
+        {
+            _Kreditnummer = kreditnummer;
+            _Konto = konto;
+            _Kreditrahmen = kreditrahmen;
+        }
+
         private int _Kreditnummer;
 
         public int Kreditnummer
         {
             get { return _Kreditnummer; }
-            set { _Kreditnummer = value; }
         }
 
         private Konto _Konto;
@@ -264,7 +359,6 @@ namespace KontoverwaltungMitMehrKlassen
         public Konto Konto
         {
             get { return _Konto; }
-            set { _Konto = value; }
         }
 
         private double _Kreditrahmen;
