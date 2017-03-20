@@ -11,6 +11,7 @@ namespace KontoverwaltungMitMehrKlassen
         static void Main(string[] args)
         {
             List<Konto> bestehendeKonten = new List<Konto>();
+            List<Inhaber> bestehendeKunden = new List<Inhaber>();
             List<int> kontonummern = new List<int>();
             List<int> kreditnummern = new List<int>();
             List<int> kundennummern = new List<int>();
@@ -26,6 +27,59 @@ namespace KontoverwaltungMitMehrKlassen
             if (enteredKey.Key == ConsoleKey.A)
             {
                 //Bankkonto oder Kredit
+                Console.WriteLine("Was möchten Sie anlegen?");
+                Console.WriteLine("[B] Bankkonto");
+                Console.WriteLine("[K] Kredit");
+                Console.WriteLine("[X] Zurück");
+                enteredKey = Console.ReadKey();
+
+                if (enteredKey.Key == ConsoleKey.B)
+                {
+                    Console.WriteLine("Für wen soll ein neues Bankkonto angelegt werden?");
+                    Console.WriteLine("[B] Bestandskunde");
+                    Console.WriteLine("[N] Neukunde");
+                    Console.WriteLine("[X] Zurück");
+                    enteredKey = Console.ReadKey();
+
+                    if (enteredKey.Key == ConsoleKey.B)
+                    {
+                        Console.WriteLine("Bitte die Kundennummer angeben:");
+                        int kundennummer;
+                        var validKundennummer = int.TryParse(Console.ReadLine(), out kundennummer);
+                        while (!validKundennummer)
+                        {
+                            Console.WriteLine("Das ist keine gültige Kundennummer. Bitte erneut versuchen.");
+                            var input = Console.ReadLine();
+                            if (input.ToString() != "Cancel")
+                            {
+                                break;
+                            }
+                            validKundennummer = int.TryParse(input, out kundennummer);
+                            validKundennummer = kundennummern.Contains(kundennummer);
+                        }
+                        foreach (Inhaber inhaber in bestehendeKunden)
+                        {
+                            if (inhaber.Kundennummer == kundennummer)
+                            {
+                                Console.WriteLine("Neues Konto für folgenden Kunden anlegen: " + inhaber.Vorname + inhaber.Nachname + "?");
+                                Console.WriteLine("[J] Ja");
+                                Console.WriteLine("[N] Nein");
+                                var answer = Console.ReadKey();
+                                if (answer.Key == ConsoleKey.J)
+                                {
+                                    var kontonummer = kontonummern.Max() + 1;
+                                    kontonummern.Add(kontonummer);
+                                    bestehendeKonten.Add(new Konto(inhaber, kontonummer));
+                                    Console.WriteLine("Neues Konto mit der Kontonummer " + kontonummer + "angelegt.");
+                                }
+                                else if (answer.Key == ConsoleKey.N)
+                                {
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else if (enteredKey.Key == ConsoleKey.B)
             {
@@ -127,6 +181,12 @@ namespace KontoverwaltungMitMehrKlassen
         {
             _Inhaber = inhaber;
             _Kontostand = 0;
+        }
+
+        public Konto(Inhaber inhaber, int kontonummer)
+        {
+            _Kontonummer = kontonummer;
+            _Inhaber = inhaber;
         }
 
         private List<Kredit> _Kredite;
