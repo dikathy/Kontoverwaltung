@@ -10,67 +10,11 @@ namespace KontoverwaltungMitMehrKlassen
     {
         static void Main(string[] args)
         {
-            int alter;
-            double kontostand;
-            Inhaber kunde = new Inhaber();
-            Konto konto = new Konto(kunde);
-            
-            Console.WriteLine("Willkommen! Bitte wählen sie eine Funktion aus:");
+            Console.WriteLine("Willkommen! Bitte wählen Sie eine Funktion aus:");
             Console.WriteLine("[A] Anlegen");
-            Console.WriteLine("[B] Buchung");
-            Console.WriteLine("[K] Kredit");
-            var enteredKey = Console.ReadKey();
-
-            switch (enteredKey.KeyChar)
-            {
-                case 'A':
-                    Console.WriteLine("[I] Inhaber anlegen");
-                    Console.WriteLine("[K] Konto anlegen (Inhaber muss vorher angelegt sein)");
-                    enteredKey = Console.ReadKey();
-
-                    switch (enteredKey.KeyChar)
-                    {
-                        case 'I':
-                            Console.WriteLine("Nachname?");
-                            kunde.Nachname = Console.ReadLine();
-                            Console.WriteLine("Vorname?");
-                            kunde.Vorname = Console.ReadLine();
-                            Console.WriteLine("Alter?");                                                        
-                            var validAlter = int.TryParse(Console.ReadLine(), out alter);
-                            while (!validAlter)
-                            {
-                                Console.WriteLine("Bitte ein gültiges Alter eingeben.");
-                                validAlter = int.TryParse(Console.ReadLine(), out alter);
-                            }
-                            kunde.Alter = alter;
-                            break;
-                        case 'K':
-                            Console.WriteLine("Kontostand?");
-                            var validKontostand = double.TryParse(Console.ReadLine(), out kontostand);
-                            while (!validKontostand)
-                            {
-                                Console.WriteLine("Bitte einen gültigen Wert als Kontostand angeben!");
-                                validKontostand = double.TryParse(Console.ReadLine(), out kontostand);
-                            }
-                            konto.Kontostand = kontostand;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 'B':
-                    Console.WriteLine("[A] Abbuchung");
-                    Console.WriteLine("[G] Gutschrift");
-                    break;
-                case 'K':
-                    Console.WriteLine("[K] Kredit Anlegen");
-                    Console.WriteLine("[R] Kreditrahmen erhöhen");
-                    Console.WriteLine("[S] Kreditsumme erhöhen");
-                    break;
-                default:
-                    break;
-            }
-
+            Console.WriteLine("[B] Buchen");
+            Console.WriteLine("[D] Daten anzeigen");
+            Console.WriteLine("[X] Beenden");
         }       
     }
 
@@ -164,6 +108,7 @@ namespace KontoverwaltungMitMehrKlassen
         public Konto Konto
         {
             get { return _Konto; }
+            set { _Konto = value; }
         }
 
         private double _Kreditrahmen;
