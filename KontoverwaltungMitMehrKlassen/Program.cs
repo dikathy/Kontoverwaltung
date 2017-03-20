@@ -15,6 +15,25 @@ namespace KontoverwaltungMitMehrKlassen
             Console.WriteLine("[B] Buchen");
             Console.WriteLine("[D] Daten anzeigen");
             Console.WriteLine("[X] Beenden");
+
+            var enteredKey = Console.ReadKey();
+
+            if (enteredKey.Key == ConsoleKey.A)
+            {
+                //Bankkonto oder Kredit
+            }
+            else if (enteredKey.Key == ConsoleKey.B)
+            {
+                //Abbuchung oder Gutschrift
+            }
+            else if (enteredKey.Key == ConsoleKey.D)
+            {
+                //Welche Kontonummer?
+            }
+            else if(enteredKey.Key == ConsoleKey.X)
+            {
+                return;
+            }
         }       
     }
 
