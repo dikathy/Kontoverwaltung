@@ -10,6 +10,8 @@ namespace KontoverwaltungMitMehrKlassen
     {
         static void Main(string[] args)
         {
+            List<Konto> bestehendeKonten = new List<Konto>();
+
             Console.WriteLine("Willkommen! Bitte wählen Sie eine Funktion aus:");
             Console.WriteLine("[A] Anlegen");
             Console.WriteLine("[B] Buchen");
@@ -29,6 +31,22 @@ namespace KontoverwaltungMitMehrKlassen
             else if (enteredKey.Key == ConsoleKey.D)
             {
                 //Welche Kontonummer?
+                Console.WriteLine("Datenanzeige");
+                Console.WriteLine("Bitte die Nummer des Kontos angeben:", "Mit 'Cancel' kehren Sie in das Hauptmenü zurück");
+                int kontonummer;
+                var validKontonummer = int.TryParse(Console.ReadLine(), out kontonummer);
+                while (!validKontonummer)
+                {
+                    Console.WriteLine("Eine Kontonummer besteht nur aus Zahlen. Bitte erneut versuchen.");
+                    validKontonummer = int.TryParse(Console.ReadLine(), out kontonummer);
+                }
+                foreach (Konto konto in bestehendeKonten)
+                {
+                    if (konto.Kontonummer == kontonummer)
+                    {
+                        konto.DatenAnzeigen();
+                    }
+                }
             }
             else if(enteredKey.Key == ConsoleKey.X)
             {
@@ -67,17 +85,6 @@ namespace KontoverwaltungMitMehrKlassen
             get { return _Alter; }
             set { _Alter = value; }
         }
-
-        public Inhaber(string nachname, string vorname, int alter)
-        {
-            _Nachname = nachname;
-            _Vorname = vorname;
-            _Alter = alter;
-        }
-        public Inhaber()
-        {
-
-        }
     }
 
     class Konto
@@ -112,6 +119,13 @@ namespace KontoverwaltungMitMehrKlassen
         {
             _Inhaber = inhaber;
             _Kontostand = 0;
+        }
+
+        public void DatenAnzeigen()
+        {
+            Console.WriteLine("Kontodaten:");
+            Console.WriteLine("Inhaber: " + _Inhaber.Vorname + _Inhaber.Nachname);
+            Console.WriteLine("Kontostand: " + _Kontostand);
         }
     }
 
