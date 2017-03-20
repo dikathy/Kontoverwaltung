@@ -79,6 +79,43 @@ namespace KontoverwaltungMitMehrKlassen
                             }
                         }
                     }
+                    else if(enteredKey.Key == ConsoleKey.N)
+                    {
+                        Inhaber inhaber = new Inhaber();
+                        int alter;
+
+                        Console.WriteLine("Bankkonto für Neukunden einrichten.");
+                        Console.WriteLine("Nachname?");
+                        inhaber.Nachname = Console.ReadLine();
+                        Console.WriteLine("Vorname?");
+                        inhaber.Vorname = Console.ReadLine();
+                        Console.WriteLine("Alter?");
+                        var validAlter = int.TryParse(Console.ReadLine(), out alter);
+                        if (alter > 120)
+                        {
+                            validAlter = false;
+                        }
+                        while (!validAlter)
+                        {
+                            Console.WriteLine("Kein gültiges Alter eingegeben");
+                            validAlter = int.TryParse(Console.ReadLine(), out alter);
+                            if (alter > 125)
+                            {
+                                validAlter = false;
+                            }
+                        }
+                        inhaber.Alter = alter;                        
+                        inhaber.Kundennummer = kundennummern.Max() + 1;
+                        kundennummern.Add(inhaber.Kundennummer);
+                        bestehendeKunden.Add(inhaber);                        
+                        Konto konto = new Konto(inhaber, kontonummern.Max() + 1);
+                        kontonummern.Add(konto.Kontonummer);
+                        bestehendeKonten.Add(konto);
+                        Console.WriteLine("Neuer Kunde und neues Konto wurden erfolgreich angelegt.");
+                        Console.WriteLine("Kundennummer: " + inhaber.Kundennummer);
+                        Console.WriteLine("Kontonummer: " + konto.Kontonummer);
+                        Console.ReadKey();
+                    }
                 }
             }
             else if (enteredKey.Key == ConsoleKey.B)
