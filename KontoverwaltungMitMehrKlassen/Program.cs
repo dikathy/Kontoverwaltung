@@ -11,6 +11,9 @@ namespace KontoverwaltungMitMehrKlassen
         static void Main(string[] args)
         {
             List<Konto> bestehendeKonten = new List<Konto>();
+            List<int> kontonummern = new List<int>();
+            List<int> kreditnummern = new List<int>();
+            List<int> kundennummern = new List<int>();
 
             Console.WriteLine("Willkommen! Bitte wählen Sie eine Funktion aus:");
             Console.WriteLine("[A] Anlegen");
@@ -30,7 +33,6 @@ namespace KontoverwaltungMitMehrKlassen
             }
             else if (enteredKey.Key == ConsoleKey.D)
             {
-                //Welche Kontonummer?
                 Console.WriteLine("Datenanzeige");
                 Console.WriteLine("Bitte die Nummer des Kontos angeben:", "Mit 'Cancel' kehren Sie in das Hauptmenü zurück");
                 int kontonummer;
@@ -57,9 +59,12 @@ namespace KontoverwaltungMitMehrKlassen
 
     class Inhaber
     {
+        private int _Kundennummer;
+
         public int Kundennummer
         {
-            get { return 55555; }
+            get { return _Kundennummer; }
+            set { _Kundennummer = value; }
         }
 
         private string _Nachname;
@@ -89,9 +94,12 @@ namespace KontoverwaltungMitMehrKlassen
 
     class Konto
     {
+        private int _Kontonummer;
+
         public int Kontonummer
         {
-            get { return 100000; }
+            get { return _Kontonummer; }
+            set { _Kontonummer = value; }
         }
 
         private double _Kontostand;
@@ -121,19 +129,37 @@ namespace KontoverwaltungMitMehrKlassen
             _Kontostand = 0;
         }
 
+        private List<Kredit> _Kredite;
+
+        public Kredit Kredite
+        {
+            set { _Kredite.Add(value) ; }
+        }
+
+
         public void DatenAnzeigen()
         {
+            double kreditsumme = 0;
             Console.WriteLine("Kontodaten:");
             Console.WriteLine("Inhaber: " + _Inhaber.Vorname + _Inhaber.Nachname);
             Console.WriteLine("Kontostand: " + _Kontostand);
+            foreach (Kredit kredit in _Kredite)
+            {
+                kreditsumme += kredit.Kreditsumme;
+            }
+            var realgeld = _Kontostand - kreditsumme;
+            Console.WriteLine("Realgeld: " + realgeld);
         }
     }
 
     class Kredit
     {
+        private int _Kreditnummer;
+
         public int Kreditnummer
         {
-            get { return 900000; }
+            get { return _Kreditnummer; }
+            set { _Kreditnummer = value; }
         }
 
         private Konto _Konto;
