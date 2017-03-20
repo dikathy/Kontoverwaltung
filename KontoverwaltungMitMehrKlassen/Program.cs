@@ -192,6 +192,76 @@ namespace KontoverwaltungMitMehrKlassen
                 else if (enteredKey.Key == ConsoleKey.B)
                 {
                     //Abbuchung oder Gutschrift
+                    Console.WriteLine("\nBuchungen");
+                    Console.WriteLine("[A] Abheben");
+                    Console.WriteLine("[E] Einzahlen");
+                    Console.WriteLine("[U] Umbuchen");
+                    Console.WriteLine("[X] Zurück");
+                    enteredKey = Console.ReadKey();
+
+                    if (enteredKey.Key == ConsoleKey.A)
+                    {
+                        int kontonummer;
+                        double betrag;
+                        Console.WriteLine("\nVon welchem Konto soll abgehoben werden?");
+                        Console.WriteLine("(Mit 'Cancel' kann der Vorgang abgebrochen werden)");
+                        var input = Console.ReadLine();
+                        if (input.ToString() == "Cancel")
+                        {
+                            break;
+                        }
+                        var validKontonummer = int.TryParse(input, out kontonummer);
+                        validKontonummer = kontonummern.Contains(kontonummer);
+                        while (!validKontonummer)
+                        {
+                            Console.WriteLine("Das ist keine gültige Kontonummer. Bitte erneut versuchen.");
+                            input = Console.ReadLine();
+                            if (input.ToString() == "Cancel")
+                            {
+                                break;
+                            }
+                            validKontonummer = int.TryParse(input, out kontonummer);
+                            validKontonummer = kontonummern.Contains(kontonummer);
+                        }
+                        Console.WriteLine("\nWelcher Betrag soll vom Konto " + kontonummer + " abgehoben werden?");
+                        Console.WriteLine("(Mit 'Cancel' kann der Vorgang abgebrochen werden)");
+                        input = Console.ReadLine();
+                        if (input.ToString() == "Cancel")
+                        {
+                            break;
+                        }
+                        var validBetrag = double.TryParse(input, out betrag);
+                        while (!validBetrag)
+                        {
+                            Console.WriteLine("Dies ist kein gültiger Betrag. Bitte erneut versuchen.");
+                            input = Console.ReadLine();
+                            if (input.ToString() == "Cancel")
+                            {
+                                break;
+                            }
+                            validBetrag = double.TryParse(input, out betrag);
+                        }
+                        foreach (Konto konto in bestehendeKonten)
+                        {
+                            if (konto.Kontonummer == kontonummer)
+                            {
+                                konto.
+                            }
+                        }
+                    }
+                    else if (enteredKey.Key == ConsoleKey.E) 
+                    {
+                        //Bareinzahlung
+                    }
+                    else if (enteredKey.Key == ConsoleKey.U)
+                    {
+                        //Umbuchung von Konto A auf Konto B intern
+                    }
+                    else if (enteredKey.Key == ConsoleKey.X)
+                    {
+                        break;
+                    }
+
                 }
                 else if (enteredKey.Key == ConsoleKey.D)
                 {
@@ -280,7 +350,6 @@ namespace KontoverwaltungMitMehrKlassen
         public double Kontostand
         {
             get { return _Kontostand; }
-            set { _Kontostand += value; }
         }
 
         private Inhaber _Inhaber;
@@ -315,7 +384,6 @@ namespace KontoverwaltungMitMehrKlassen
             set { _Kredite.Add(value); }
         }
 
-
         public void DatenAnzeigen()
         {
             double kreditsumme = 0;
@@ -323,18 +391,51 @@ namespace KontoverwaltungMitMehrKlassen
             Console.WriteLine("Kontodaten:");
             Console.WriteLine("Inhaber: " + _Inhaber.Vorname + " " + _Inhaber.Nachname);
             Console.WriteLine("Kontostand: " + _Kontostand + " Euro");
+            var realgeld = _Kontostand - KreditrahmenAusrechnen();
+            Console.WriteLine("Realgeld: " + realgeld + " Euro");
+            Console.WriteLine("Kreditrahmen insgesamt: " + KreditrahmenAusrechnen() + " Euro");
+        }
+
+        public void GeldAbheben(double betrag)
+        {
+            if ((_Kontostand - betrag) > 0)
+            {
+                _Kontostand -= betrag;
+            }
+            else if (KreditsummeAusrechnen() + betrag < KreditrahmenAusrechnen())
+            {
+                //Kredit mit gnügend Rahmen suchen
+            }
+            else
+            {
+                //Fehler Kreditrahmen überschritten
+            }
+        }
+
+        private double KreditsummeAusrechnen()
+        {
+            double kreditsumme = 0;
             if (_Kredite != null)
             {
                 foreach (Kredit kredit in _Kredite)
                 {
                     kreditsumme += kredit.Kreditsumme;
-                    kreditrahmen += kredit.Kreditrahmen;
-                }                
+                }
             }
-            var realgeld = _Kontostand - kreditsumme;
-            Console.WriteLine("Realgeld: " + realgeld + " Euro");
-            Console.WriteLine("Kreditrahmen insgesamt: " + kreditrahmen + " Euro");
+            return kreditsumme;
+        }
 
+        private double KreditrahmenAusrechnen()
+        {
+            double kreditrahmen = 0;
+            if (_Kredite != null)
+            {
+                foreach (Kredit kredit in _Kredite)
+                {
+                    kreditrahmen += kredit.Kreditrahmen;
+                }
+            }
+            return kreditrahmen;
         }
     }
 
