@@ -194,7 +194,6 @@ namespace KontoverwaltungMitMehrKlassen
                     Console.WriteLine("\nBuchungen");
                     Console.WriteLine("[A] Abheben");
                     Console.WriteLine("[E] Einzahlen");
-                    Console.WriteLine("[U] Umbuchen");
                     Console.WriteLine("[X] Zurück");
                     enteredKey = Console.ReadKey();
 
@@ -254,7 +253,8 @@ namespace KontoverwaltungMitMehrKlassen
                         int kontonummer;
                         double betrag;
                         double kontostand = 0;
-                        Console.WriteLine("\nAuf welches Konto möchten Sie einzahlen?");
+                        Console.WriteLine("\nEinzahlung");
+                        Console.WriteLine("Auf welches Konto möchten Sie einzahlen?");
                         Console.WriteLine("Mit 'Cancel' kehren Sie in das Hauptmenü zurück.");
                         var input = Console.ReadLine();
                         if (input == "Cancel")
@@ -303,10 +303,7 @@ namespace KontoverwaltungMitMehrKlassen
                         }
                         Console.WriteLine("Es wurden " + betrag + " Euro auf das Konto " + kontonummer + " eingezahlt.");
                         Console.WriteLine("Ihr Kontostand beträgt nun " + kontostand + " Euro");
-                    }
-                    else if (enteredKey.Key == ConsoleKey.U)
-                    {
-                        //Umbuchung von Konto A auf Konto B intern
+                        Console.ReadKey();
                     }
                     else if (enteredKey.Key == ConsoleKey.X)
                     {
@@ -440,7 +437,7 @@ namespace KontoverwaltungMitMehrKlassen
             Console.WriteLine("Kontodaten:");
             Console.WriteLine("Inhaber: " + _Inhaber.Vorname + " " + _Inhaber.Nachname);
             Console.WriteLine("Kontostand: " + _Kontostand + " Euro");
-            var realgeld = _Kontostand - KreditrahmenAusrechnen();
+            var realgeld = _Kontostand - KreditsummeAusrechnen();
             Console.WriteLine("Realgeld: " + realgeld + " Euro");
             Console.WriteLine("Kreditrahmen insgesamt: " + KreditrahmenAusrechnen() + " Euro");
         }
