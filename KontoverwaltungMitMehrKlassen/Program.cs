@@ -10,7 +10,6 @@ namespace KontoverwaltungMitMehrKlassen
     {
         static void Main(string[] args)
         {
-            bool end = false;
             List<Konto> bestehendeKonten = new List<Konto>();
             List<Inhaber> bestehendeKunden = new List<Inhaber>();
             List<int> kontonummern = new List<int>();
@@ -245,13 +244,65 @@ namespace KontoverwaltungMitMehrKlassen
                         {
                             if (konto.Kontonummer == kontonummer)
                             {
-                                konto.
+                                konto.GeldAbheben(betrag);
                             }
                         }
                     }
                     else if (enteredKey.Key == ConsoleKey.E) 
                     {
                         //Bareinzahlung
+                        int kontonummer;
+                        double betrag;
+                        double kontostand = 0;
+                        Console.WriteLine("\nAuf welches Konto möchten Sie einzahlen?");
+                        Console.WriteLine("Mit 'Cancel' kehren Sie in das Hauptmenü zurück.");
+                        var input = Console.ReadLine();
+                        if (input == "Cancel")
+                        {
+                            break;
+                        }
+                        var validKontonummer = int.TryParse(input, out kontonummer);
+                        validKontonummer = kontonummern.Contains(kontonummer);
+                        while (!validKontonummer)
+                        {
+                            Console.WriteLine("Dies ist keine gültige Kontonummer. Bitte erneut versuchen.");
+                            input = Console.ReadLine();
+                            if (input == "Cancel")
+                            {
+                                break;
+                            }
+                            validKontonummer = int.TryParse(input, out kontonummer);
+                            validKontonummer = kontonummern.Contains(kontonummer);
+                        }
+                        Console.WriteLine("Welchen Betrag möchten Sie einzahlen?");
+                        Console.WriteLine("Mit 'Cancel' kehren Sie in das Hauptmenü zurück.");
+                        input = Console.ReadLine();
+                        if (input == "Cancel")
+                        {
+                            break;
+                        }
+                        var validBetrag = double.TryParse(input, out betrag);
+                        while (!validBetrag)
+                        {
+                            Console.WriteLine("Dies ist kein gültiger Betrag. Bitte erneut versuchen.");
+                            input = Console.ReadLine();
+                            if (input == "Cancel")
+                            {
+                                break;
+                            }
+                            validBetrag = double.TryParse(input, out betrag);
+                        }
+                        
+                        foreach (Konto konto in bestehendeKonten)
+                        {
+                            if (konto.Kontonummer == kontonummer)
+                            {
+                                konto.GeldEinzahlen(betrag);
+                                kontostand = konto.Kontostand;
+                            }
+                        }
+                        Console.WriteLine("Es wurden " + betrag + " Euro auf das Konto " + kontonummer + " eingezahlt.");
+                        Console.WriteLine("Ihr Kontostand beträgt nun " + kontostand + " Euro");
                     }
                     else if (enteredKey.Key == ConsoleKey.U)
                     {
@@ -386,8 +437,6 @@ namespace KontoverwaltungMitMehrKlassen
 
         public void DatenAnzeigen()
         {
-            double kreditsumme = 0;
-            double kreditrahmen = 0;
             Console.WriteLine("Kontodaten:");
             Console.WriteLine("Inhaber: " + _Inhaber.Vorname + " " + _Inhaber.Nachname);
             Console.WriteLine("Kontostand: " + _Kontostand + " Euro");
@@ -398,18 +447,45 @@ namespace KontoverwaltungMitMehrKlassen
 
         public void GeldAbheben(double betrag)
         {
+            var tempBetrag = betrag;
             if ((_Kontostand - betrag) > 0)
             {
-                _Kontostand -= betrag;
+                _Kontostand -= tempBetrag;
             }
-            else if (KreditsummeAusrechnen() + betrag < KreditrahmenAusrechnen())
+            else if (KreditsummeAusrechnen() + tempBetrag < KreditrahmenAusrechnen())
             {
-                //Kredit mit gnügend Rahmen suchen
+                foreach (Kredit kredit in _Kredite)
+                {
+                    if(tempBetrag == 0)
+                    {
+                        break;
+                    }
+                    if (kredit.Kreditrahmen > kredit.Kreditsumme)
+                    {
+                        var verfügbareSumme = kredit.Kreditrahmen - kredit.Kreditsumme;
+                        if (verfügbareSumme >= tempBetrag)
+                        {
+                            kredit.Kreditsumme += tempBetrag;
+                        }
+                        else
+                        {
+                            tempBetrag -= verfügbareSumme;
+                            kredit.Kreditsumme = kredit.Kreditrahmen;
+                        }
+                    }
+                }
+                Console.WriteLine("Sie haben " + betrag + " Euro vom Konto " + Kontonummer + " abgehoben.");
             }
             else
             {
-                //Fehler Kreditrahmen überschritten
+                double verfügbareSumme = KreditrahmenAusrechnen() - KreditsummeAusrechnen();
+                Console.WriteLine("Sie können den Betrag nicht abheben, da Sie nurnoch " + verfügbareSumme + " Euro zur Verfügung haben.");
             }
+        }
+
+        public void GeldEinzahlen(double betrag)
+        {
+            _Kontostand += betrag;
         }
 
         private double KreditsummeAusrechnen()
