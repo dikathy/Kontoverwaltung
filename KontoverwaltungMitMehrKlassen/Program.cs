@@ -8,16 +8,16 @@ namespace KontoverwaltungMitMehrKlassen
 {
     class Program
     {
+        static List<Konto> bestehendeKonten = new List<Konto>();
+        static List<Inhaber> bestehendeKunden = new List<Inhaber>();
+        static List<int> vergebeneKontonummern = new List<int>();
+        static List<int> vergebeneKreditnummern = new List<int>();
+        static List<int> vergebeneKundennummern = new List<int>();
+
         static void Main(string[] args)
         {
-            List<Konto> bestehendeKonten = new List<Konto>();
-            List<Inhaber> bestehendeKunden = new List<Inhaber>();
-            List<int> kontonummern = new List<int>();
-            kontonummern.Add(0);
-            List<int> kreditnummern = new List<int>();
-            kreditnummern.Add(0);
-            List<int> kundennummern = new List<int>();
-            kundennummern.Add(0);
+            vergebeneKontonummern.Add(0);
+            vergebeneKreditnummern.Add(0);
 
             Console.WriteLine("Willkommen! Bitte wählen Sie eine Funktion aus:");
             Console.WriteLine("[A] Anlegen");
@@ -47,50 +47,59 @@ namespace KontoverwaltungMitMehrKlassen
 
                         if (enteredKey.Key == ConsoleKey.B)
                         {
-                            Console.WriteLine("\nBitte die Kundennummer angeben:" + "\n(Mit 'Cancel' kann die Aktion abgebrochen werden)");
-                            int kundennummer;
-                            var input = Console.ReadLine();
-                            if (input.ToString() == "Cancel")
+                            if (vergebeneKundennummern.Count != 0)
                             {
-                                break;
-                            }
-                            var validKundennummer = int.TryParse(input, out kundennummer);
-                            if (validKundennummer)
-                            {
-                                validKundennummer = kundennummern.Contains(kundennummer);
-                            }
-                            while (!validKundennummer)
-                            {
-                                Console.WriteLine("\nDas ist keine gültige Kundennummer. Bitte erneut versuchen.");
-                                input = Console.ReadLine();
+                                Console.WriteLine("\nBitte die Kundennummer angeben:" + "\n(Mit 'Cancel' kann die Aktion abgebrochen werden)");
+                                int kundennummerInput;
+                                var input = Console.ReadLine();
                                 if (input.ToString() == "Cancel")
                                 {
                                     break;
                                 }
-                                validKundennummer = int.TryParse(input, out kundennummer);
-                                validKundennummer = kundennummern.Contains(kundennummer);
-                            }
-                            foreach (Inhaber inhaber in bestehendeKunden)
-                            {
-                                if (inhaber.Kundennummer == kundennummer)
+                                var validKundennummer = int.TryParse(input, out kundennummerInput);
+                                if (validKundennummer)
                                 {
-                                    Console.WriteLine("\nNeues Konto für folgenden Kunden anlegen: " + inhaber.Vorname + " " + inhaber.Nachname + "?");
-                                    Console.WriteLine("[J] Ja");
-                                    Console.WriteLine("[N] Nein");
-                                    var answer = Console.ReadKey();
-                                    if (answer.Key == ConsoleKey.J)
+                                    validKundennummer = vergebeneKundennummern.Contains(kundennummerInput);
+                                }
+                                while (!validKundennummer)
+                                {
+                                    Console.WriteLine("\nDas ist keine gültige Kundennummer. Bitte erneut versuchen.");
+                                    input = Console.ReadLine();
+                                    if (input.ToString() == "Cancel")
                                     {
-                                        var kontonummer = kontonummern.Max() + 1;
-                                        kontonummern.Add(kontonummer);
-                                        bestehendeKonten.Add(new Konto(inhaber, kontonummer));
-                                        Console.WriteLine("\nNeues Konto mit der Kontonummer " + kontonummer + " angelegt.");
+                                        break;
                                     }
-                                    else if (answer.Key == ConsoleKey.N)
+                                    validKundennummer = int.TryParse(input, out kundennummerInput);
+                                    validKundennummer = vergebeneKundennummern.Contains(kundennummerInput);
+                                }
+                                foreach (Inhaber inhaber in bestehendeKunden)
+                                {
+                                    if (inhaber.Kundennummer == kundennummerInput)
                                     {
-                                        Console.WriteLine("\nAktion abgebrochen.");
+                                        Console.WriteLine("\nNeues Konto für folgenden Kunden anlegen: " + inhaber.Vorname + " " + inhaber.Nachname + "?");
+                                        Console.WriteLine("[J] Ja");
+                                        Console.WriteLine("[N] Nein");
+                                        var answer = Console.ReadKey();
+                                        if (answer.Key == ConsoleKey.J)
+                                        {
+                                            var kontonummer = vergebeneKontonummern.Max() + 1;
+                                            vergebeneKontonummern.Add(kontonummer);
+                                            bestehendeKonten.Add(new Konto(inhaber, kontonummer));
+                                            Console.WriteLine("\nNeues Konto mit der Kontonummer " + kontonummer + " angelegt.");
+                                        }
+                                        else if (answer.Key == ConsoleKey.N)
+                                        {
+                                            Console.WriteLine("\nAktion abgebrochen.");
+                                        }
                                     }
                                 }
                             }
+                            else
+                            {
+                                Console.WriteLine("\nEs sind noch keine Kunden angelegt.");
+                                Console.WriteLine("Drücken Sie eine beliebige Taste, in das Hauptmenü zurückzukehren.");
+                                Console.ReadKey();
+                            }                            
                         }
                         else if (enteredKey.Key == ConsoleKey.N)
                         {
@@ -118,11 +127,11 @@ namespace KontoverwaltungMitMehrKlassen
                                 }
                             }
                             inhaber.Alter = alter;
-                            inhaber.Kundennummer = kundennummern.Max() + 1;
-                            kundennummern.Add(inhaber.Kundennummer);
+                            inhaber.Kundennummer = vergebeneKundennummern.Max() + 1;
+                            vergebeneKundennummern.Add(inhaber.Kundennummer);
                             bestehendeKunden.Add(inhaber);
-                            Konto konto = new Konto(inhaber, kontonummern.Max() + 1);
-                            kontonummern.Add(konto.Kontonummer);
+                            Konto konto = new Konto(inhaber, vergebeneKontonummern.Max() + 1);
+                            vergebeneKontonummern.Add(konto.Kontonummer);
                             bestehendeKonten.Add(konto);
                             Console.WriteLine("\nNeuer Kunde und neues Konto wurden erfolgreich angelegt.");
                             Console.WriteLine("Kundennummer: " + inhaber.Kundennummer);
@@ -148,7 +157,7 @@ namespace KontoverwaltungMitMehrKlassen
                         var validKontonummer = int.TryParse(input, out kontonummer);
                         if (validKontonummer)
                         {
-                            validKontonummer = kontonummern.Contains(kontonummer);
+                            validKontonummer = vergebeneKontonummern.Contains(kontonummer);
                         }
                         while (!validKontonummer)
                         {
@@ -157,7 +166,7 @@ namespace KontoverwaltungMitMehrKlassen
                             validKontonummer = int.TryParse(input, out kontonummer);
                             if (validKontonummer)
                             {
-                                validKontonummer = kontonummern.Contains(kontonummer);
+                                validKontonummer = vergebeneKontonummern.Contains(kontonummer);
                             }
                         }
                         foreach (Konto konto in bestehendeKonten)
@@ -179,8 +188,8 @@ namespace KontoverwaltungMitMehrKlassen
                                     Console.WriteLine("\nDas ist kein gültiger Kreditrahmen! Bitte erneut versuchen.");
                                     validKreditrahmen = double.TryParse(Console.ReadLine(), out kreditrahmen);
                                 }
-                                Kredit kredit = new Kredit(kreditnummern.Max() + 1, konto, kreditrahmen);
-                                kreditnummern.Add(kredit.Kreditnummer);
+                                Kredit kredit = new Kredit(vergebeneKreditnummern.Max() + 1, konto, kreditrahmen);
+                                vergebeneKreditnummern.Add(kredit.Kreditnummer);
                                 konto.Kredite = kredit;
                                 Console.WriteLine("Das Konto " + konto.Kontonummer + " verfügt nun über einen zusätzlichen Kreditrahmen von " + kredit.Kreditrahmen + " Euro.");
                                 Console.ReadKey();
@@ -209,7 +218,7 @@ namespace KontoverwaltungMitMehrKlassen
                             break;
                         }
                         var validKontonummer = int.TryParse(input, out kontonummer);
-                        validKontonummer = kontonummern.Contains(kontonummer);
+                        validKontonummer = vergebeneKontonummern.Contains(kontonummer);
                         while (!validKontonummer)
                         {
                             Console.WriteLine("Das ist keine gültige Kontonummer. Bitte erneut versuchen.");
@@ -219,7 +228,7 @@ namespace KontoverwaltungMitMehrKlassen
                                 break;
                             }
                             validKontonummer = int.TryParse(input, out kontonummer);
-                            validKontonummer = kontonummern.Contains(kontonummer);
+                            validKontonummer = vergebeneKontonummern.Contains(kontonummer);
                         }
                         Console.WriteLine("\nWelcher Betrag soll vom Konto " + kontonummer + " abgehoben werden?");
                         Console.WriteLine("(Mit 'Cancel' kann der Vorgang abgebrochen werden)");
@@ -262,7 +271,7 @@ namespace KontoverwaltungMitMehrKlassen
                             break;
                         }
                         var validKontonummer = int.TryParse(input, out kontonummer);
-                        validKontonummer = kontonummern.Contains(kontonummer);
+                        validKontonummer = vergebeneKontonummern.Contains(kontonummer);
                         while (!validKontonummer)
                         {
                             Console.WriteLine("Dies ist keine gültige Kontonummer. Bitte erneut versuchen.");
@@ -272,7 +281,7 @@ namespace KontoverwaltungMitMehrKlassen
                                 break;
                             }
                             validKontonummer = int.TryParse(input, out kontonummer);
-                            validKontonummer = kontonummern.Contains(kontonummer);
+                            validKontonummer = vergebeneKontonummern.Contains(kontonummer);
                         }
                         Console.WriteLine("Welchen Betrag möchten Sie einzahlen?");
                         Console.WriteLine("Mit 'Cancel' kehren Sie in das Hauptmenü zurück.");
@@ -345,8 +354,10 @@ namespace KontoverwaltungMitMehrKlassen
                 Console.WriteLine("[X] Beenden");
                 enteredKey = Console.ReadKey();
             }            
-        }       
+        }
     }
+
+
 
     class Inhaber
     {
@@ -382,6 +393,8 @@ namespace KontoverwaltungMitMehrKlassen
             set { _Alter = value; }
         }
     }
+
+
 
     class Konto
     {
@@ -511,6 +524,8 @@ namespace KontoverwaltungMitMehrKlassen
             return kreditrahmen;
         }
     }
+
+
 
     class Kredit
     {
