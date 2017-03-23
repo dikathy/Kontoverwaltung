@@ -16,9 +16,6 @@ namespace KontoverwaltungMitMehrKlassen
 
         static void Main(string[] args)
         {
-            vergebeneKontonummern.Add(0);
-            vergebeneKreditnummern.Add(0);
-
             Console.WriteLine("Willkommen! Bitte wählen Sie eine Funktion aus:");
             Console.WriteLine("[A] Anlegen");
             Console.WriteLine("[B] Buchen");
@@ -82,7 +79,7 @@ namespace KontoverwaltungMitMehrKlassen
                                         var answer = Console.ReadKey();
                                         if (answer.Key == ConsoleKey.J)
                                         {
-                                            var kontonummer = vergebeneKontonummern.Max() + 1;
+                                            var kontonummer = vergebeneKontonummern.Count + 1;
                                             vergebeneKontonummern.Add(kontonummer);
                                             bestehendeKonten.Add(new Konto(inhaber, kontonummer));
                                             Console.WriteLine("\nNeues Konto mit der Kontonummer " + kontonummer + " angelegt.");
@@ -127,10 +124,10 @@ namespace KontoverwaltungMitMehrKlassen
                                 }
                             }
                             inhaber.Alter = alter;
-                            inhaber.Kundennummer = vergebeneKundennummern.Max() + 1;
+                            inhaber.Kundennummer = vergebeneKundennummern.Count + 1;
                             vergebeneKundennummern.Add(inhaber.Kundennummer);
                             bestehendeKunden.Add(inhaber);
-                            Konto konto = new Konto(inhaber, vergebeneKontonummern.Max() + 1);
+                            Konto konto = new Konto(inhaber, vergebeneKontonummern.Count + 1);
                             vergebeneKontonummern.Add(konto.Kontonummer);
                             bestehendeKonten.Add(konto);
                             Console.WriteLine("\nNeuer Kunde und neues Konto wurden erfolgreich angelegt.");
@@ -188,7 +185,7 @@ namespace KontoverwaltungMitMehrKlassen
                                     Console.WriteLine("\nDas ist kein gültiger Kreditrahmen! Bitte erneut versuchen.");
                                     validKreditrahmen = double.TryParse(Console.ReadLine(), out kreditrahmen);
                                 }
-                                Kredit kredit = new Kredit(vergebeneKreditnummern.Max() + 1, konto, kreditrahmen);
+                                Kredit kredit = new Kredit(vergebeneKreditnummern.Count + 1, konto, kreditrahmen);
                                 vergebeneKreditnummern.Add(kredit.Kreditnummer);
                                 konto.Kredite = kredit;
                                 Console.WriteLine("Das Konto " + konto.Kontonummer + " verfügt nun über einen zusätzlichen Kreditrahmen von " + kredit.Kreditrahmen + " Euro.");
@@ -203,7 +200,7 @@ namespace KontoverwaltungMitMehrKlassen
                     Console.WriteLine("\nBuchungen");
                     Console.WriteLine("[A] Abheben");
                     Console.WriteLine("[E] Einzahlen");
-                    Console.WriteLine("[X] Zurück");
+                    Console.WriteLine("[Z] Zurück");
                     enteredKey = Console.ReadKey();
 
                     if (enteredKey.Key == ConsoleKey.A)
@@ -314,11 +311,10 @@ namespace KontoverwaltungMitMehrKlassen
                         Console.WriteLine("Ihr Kontostand beträgt nun " + kontostand + " Euro");
                         Console.ReadKey();
                     }
-                    else if (enteredKey.Key == ConsoleKey.X)
+                    else if (enteredKey.Key == ConsoleKey.Z)
                     {
-                        break;
+                        continue;
                     }
-
                 }
                 else if (enteredKey.Key == ConsoleKey.D)
                 {
@@ -354,236 +350,6 @@ namespace KontoverwaltungMitMehrKlassen
                 Console.WriteLine("[X] Beenden");
                 enteredKey = Console.ReadKey();
             }            
-        }
-    }
-
-
-
-    class Inhaber
-    {
-        private int _Kundennummer;
-
-        public int Kundennummer
-        {
-            get { return _Kundennummer; }
-            set { _Kundennummer = value; }
-        }
-
-        private string _Nachname;
-
-        public string Nachname
-        {
-            get { return _Nachname; }
-            set { _Nachname = value; }
-        }
-
-        private string _Vorname;
-
-        public string Vorname
-        {
-            get { return _Vorname; }
-            set { _Vorname = value; }
-        }
-
-        private int _Alter;
-
-        public int Alter
-        {
-            get { return _Alter; }
-            set { _Alter = value; }
-        }
-    }
-
-
-
-    class Konto
-    {
-        private int _Kontonummer;
-
-        public int Kontonummer
-        {
-            get { return _Kontonummer; }
-            set { _Kontonummer = value; }
-        }
-
-        private double _Kontostand;
-
-        public double Kontostand
-        {
-            get { return _Kontostand; }
-        }
-
-        private Inhaber _Inhaber;
-
-        public Inhaber Inhaber
-        {
-            get { return _Inhaber; }
-        }
-
-        public Konto(Inhaber inhaber, double kontostand)
-        {
-            _Inhaber = inhaber;
-            _Kontostand = kontostand;
-        }
-
-        public Konto(Inhaber inhaber)
-        {
-            _Inhaber = inhaber;
-            _Kontostand = 0;
-        }
-
-        public Konto(Inhaber inhaber, int kontonummer)
-        {
-            _Kontonummer = kontonummer;
-            _Inhaber = inhaber;
-        }
-
-        private List<Kredit> _Kredite = new List<Kredit>();
-
-        public Kredit Kredite
-        {
-            set { _Kredite.Add(value); }
-        }
-
-        public void DatenAnzeigen()
-        {
-            Console.WriteLine("Kontodaten:");
-            Console.WriteLine("Inhaber: " + _Inhaber.Vorname + " " + _Inhaber.Nachname);
-            Console.WriteLine("Kontostand: " + _Kontostand + " Euro");
-            var realgeld = _Kontostand - KreditsummeAusrechnen();
-            Console.WriteLine("Realgeld: " + realgeld + " Euro");
-            Console.WriteLine("Kreditrahmen insgesamt: " + KreditrahmenAusrechnen() + " Euro");
-        }
-
-        public void GeldAbheben(double betrag)
-        {
-            var tempBetrag = betrag;
-            if ((_Kontostand - betrag) > 0)
-            {
-                _Kontostand -= tempBetrag;
-            }
-            else if (KreditsummeAusrechnen() + tempBetrag < KreditrahmenAusrechnen())
-            {
-                foreach (Kredit kredit in _Kredite)
-                {
-                    if(tempBetrag == 0)
-                    {
-                        break;
-                    }
-                    if (kredit.Kreditrahmen > kredit.Kreditsumme)
-                    {
-                        var verfügbareSumme = kredit.Kreditrahmen - kredit.Kreditsumme;
-                        if (verfügbareSumme >= tempBetrag)
-                        {
-                            kredit.Kreditsumme += tempBetrag;
-                        }
-                        else
-                        {
-                            tempBetrag -= verfügbareSumme;
-                            kredit.Kreditsumme = kredit.Kreditrahmen;
-                        }
-                    }
-                }
-                Console.WriteLine("Sie haben " + betrag + " Euro vom Konto " + Kontonummer + " abgehoben.");
-            }
-            else
-            {
-                double verfügbareSumme = KreditrahmenAusrechnen() - KreditsummeAusrechnen();
-                Console.WriteLine("Sie können den Betrag nicht abheben, da Sie nurnoch " + verfügbareSumme + " Euro zur Verfügung haben.");
-            }
-        }
-
-        public void GeldEinzahlen(double betrag)
-        {
-            _Kontostand += betrag;
-        }
-
-        private double KreditsummeAusrechnen()
-        {
-            double kreditsumme = 0;
-            if (_Kredite != null)
-            {
-                foreach (Kredit kredit in _Kredite)
-                {
-                    kreditsumme += kredit.Kreditsumme;
-                }
-            }
-            return kreditsumme;
-        }
-
-        private double KreditrahmenAusrechnen()
-        {
-            double kreditrahmen = 0;
-            if (_Kredite != null)
-            {
-                foreach (Kredit kredit in _Kredite)
-                {
-                    kreditrahmen += kredit.Kreditrahmen;
-                }
-            }
-            return kreditrahmen;
-        }
-    }
-
-
-
-    class Kredit
-    {
-        public Kredit(int kreditnummer,Konto konto, double kreditrahmen)
-        {
-            _Kreditnummer = kreditnummer;
-            _Konto = konto;
-            _Kreditrahmen = kreditrahmen;
-        }
-
-        private int _Kreditnummer;
-
-        public int Kreditnummer
-        {
-            get { return _Kreditnummer; }
-        }
-
-        private Konto _Konto;
-
-        public Konto Konto
-        {
-            get { return _Konto; }
-        }
-
-        private double _Kreditrahmen;
-
-        public double Kreditrahmen
-        {
-            get { return _Kreditrahmen; }
-            set
-            {
-                if (_Konto.Inhaber.Alter >= 18)
-                {
-                    _Kreditrahmen += value;
-                }
-                else
-                {
-                    Console.WriteLine("Der Inhaber ist noch nicht volljährig und darf daher keinen Kredit aufnehmen!");
-                }
-            }               
-        }
-
-        private double _Kreditsumme;
-
-        public double Kreditsumme
-        {
-            get { return _Kreditsumme; }
-            set
-            {
-                if (Kreditrahmen >= _Kreditsumme + value)
-                {
-                    _Kreditsumme += value;
-                }
-                else
-                {
-                    Console.WriteLine("Der Betrag würde den Kreditrahmen übersteigen!");
-                }    
-            }
         }
     }
 }
