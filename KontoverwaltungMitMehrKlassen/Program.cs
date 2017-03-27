@@ -196,7 +196,7 @@ namespace KontoverwaltungMitMehrKlassen
                 }
                 else if (enteredKey.Key == ConsoleKey.B)
                 {
-                    //Abbuchung oder Gutschrift
+                    //Abbuchung oder Einzahlung
                     Console.WriteLine("\nBuchungen");
                     Console.WriteLine("[A] Abheben");
                     Console.WriteLine("[E] Einzahlen");

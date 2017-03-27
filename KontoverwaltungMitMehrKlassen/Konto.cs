@@ -62,45 +62,54 @@ namespace KontoverwaltungMitMehrKlassen
             Console.WriteLine("Kontostand: " + _Kontostand + " Euro");
             var realgeld = _Kontostand - KreditsummeAusrechnen();
             Console.WriteLine("Realgeld: " + realgeld + " Euro");
+            Console.WriteLine("Kreditsumme insgesamt: " + KreditsummeAusrechnen());
             Console.WriteLine("Kreditrahmen insgesamt: " + KreditrahmenAusrechnen() + " Euro");
         }
 
         public void GeldAbheben(double betrag)
         {
+            // Kontostand > 0, erst davon abheben
             var tempBetrag = betrag;
             if ((_Kontostand - betrag) > 0)
             {
                 _Kontostand -= tempBetrag;
-            }
-            else if (KreditsummeAusrechnen() + tempBetrag < KreditrahmenAusrechnen())
-            {
-                foreach (Kredit kredit in _Kredite)
-                {
-                    if (tempBetrag == 0)
-                    {
-                        break;
-                    }
-                    if (kredit.Kreditrahmen > kredit.Kreditsumme)
-                    {
-                        var verfügbareSumme = kredit.Kreditrahmen - kredit.Kreditsumme;
-                        if (verfügbareSumme >= tempBetrag)
-                        {
-                            kredit.Kreditsumme += tempBetrag;
-                        }
-                        else
-                        {
-                            tempBetrag -= verfügbareSumme;
-                            kredit.Kreditsumme = kredit.Kreditrahmen;
-                        }
-                    }
-                }
                 Console.WriteLine("Sie haben " + betrag + " Euro vom Konto " + Kontonummer + " abgehoben.");
             }
             else
             {
-                double verfügbareSumme = KreditrahmenAusrechnen() - KreditsummeAusrechnen();
-                Console.WriteLine("Sie können den Betrag nicht abheben, da Sie nurnoch " + verfügbareSumme + " Euro zur Verfügung haben.");
+                tempBetrag -= _Kontostand;
+                if (KreditsummeAusrechnen() + tempBetrag < KreditrahmenAusrechnen())
+                {
+                    foreach (Kredit kredit in _Kredite)
+                    {
+                        if (tempBetrag == 0)
+                        {
+                            break;
+                        }
+                        if (kredit.Kreditrahmen > kredit.Kreditsumme)
+                        {
+                            var verfügbareSumme = kredit.Kreditrahmen - kredit.Kreditsumme;
+                            if (verfügbareSumme >= tempBetrag)
+                            {
+                                kredit.Kreditsumme += tempBetrag;
+                            }
+                            else
+                            {
+                                tempBetrag -= verfügbareSumme;
+                                kredit.Kreditsumme = kredit.Kreditrahmen;
+                            }
+                        }
+                    }
+                    _Kontostand = 0;
+                    Console.WriteLine("Sie haben " + betrag + " Euro vom Konto " + Kontonummer + " abgehoben.");
+                }
+                else
+                {
+                    double verfügbareSumme = KreditrahmenAusrechnen() - KreditsummeAusrechnen();
+                    Console.WriteLine("Sie können den Betrag nicht abheben, da Sie nurnoch " + verfügbareSumme + " Euro zur Verfügung haben.");
+                }
             }
+            
         }
 
         public void GeldEinzahlen(double betrag)
